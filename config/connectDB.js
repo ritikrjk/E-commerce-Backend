@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
+//removed the exposed uri
 if (!process.env.MONGODB_URI) {
   throw new Error("Please provide mongodb uri in .env file");
 }
