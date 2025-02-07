@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import Product from "../models/product.model.js";
 const userRouter = express.Router();
 
+//adding a product to cart
 userRouter.post("/api/add-to-cart", verifySession, async (req, res) => {
   try {
     const { id } = req.body;
@@ -33,6 +34,7 @@ userRouter.post("/api/add-to-cart", verifySession, async (req, res) => {
   }
 });
 
+//removing product from user cart
 userRouter.delete(
   "/api/remove-from-cart/:id",
   verifySession,
@@ -64,4 +66,33 @@ userRouter.delete(
   }
 );
 
+//adding address of user
+userRouter.post("/api/save-user-address", verifySession, async (req, res) => {
+  try {
+    const { address } = req.body;
+
+    //find user by ID
+    let user = await User.findById(req.id);
+
+    //save the address
+    user.address = address;
+    await user.save();
+
+    //sending the response
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message || error,
+    });
+  }
+});
+
+//order a product
+userRouter.post('/api/order', verifySession, async (req, res) =>{
+try {
+    const {cart, address} = req.body;
+} catch (error) {
+  
+}
+})
 export default userRouter;
