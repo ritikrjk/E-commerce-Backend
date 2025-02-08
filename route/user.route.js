@@ -2,6 +2,7 @@ import express from "express";
 import verifySession from "../middleware/verifySession.js";
 import User from "../models/user.model.js";
 import Product from "../models/product.model.js";
+import Order from "../models/order.model.js";
 const userRouter = express.Router();
 
 //adding a product to cart
@@ -72,7 +73,7 @@ userRouter.post("/api/save-user-address", verifySession, async (req, res) => {
     const { address } = req.body;
 
     //find user by ID
-    let user = await User.findById(req.id);
+    let user = await User.findById(req.user);
 
     //save the address
     user.address = address;
@@ -88,11 +89,51 @@ userRouter.post("/api/save-user-address", verifySession, async (req, res) => {
 });
 
 //order a product
-userRouter.post('/api/order', verifySession, async (req, res) =>{
-try {
-    const {cart, address} = req.body;
-} catch (error) {
-  
-}
-})
+userRouter.post("/api/order", verifySession, async (req, res) => {
+  try {
+    const { cart, address } = req.body;
+    let products = [];
+
+    for (let i = 0; i < cart.length; i++) {
+      let product = await Product.findById(cart[i].product._id);
+      if (product.quantity >= cart[i].quantity) {
+        product.quantity -= cart[i].quantity;
+        products.push({ product, quantity: cart[i].quantity });
+        await product.save();
+      } else {
+        return res.status(400).json({
+          msg: `${product.name} is out of stock`,
+        });
+      }
+
+      let user = await User.findById(req.user);
+      user.cart = [];
+      user = await user.save();
+
+      let order = new Order({
+        products,
+        totalPrice,
+        address,
+        userId: req.user,
+        orderedAt: new Date().getTime(),
+      });
+
+      order = await order.save();
+      res.json(order);
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: error.message || error,
+    });
+  }
+});
+
+userRouter.get("/api/orders/me", verifySession, async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.user });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: error.message || error });
+  }
+});
 export default userRouter;
