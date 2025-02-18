@@ -1,7 +1,8 @@
 import express from "express";
 
 import Product from "../models/product.model.js";
-import adminMiddleware from "../middleware/admin.middleware.js";
+import adminMiddleware from "../middleware/adminmiddleware.js";
+import Order from "../models/order.model.js";
 
 const adminRouter = express.Router();
 
@@ -10,11 +11,7 @@ adminRouter.post("/add-product", adminMiddleware, async (request, response) => {
   try {
     const { name, description, images, quantity, price, category } =
       request.body;
-
-    // Validate request body
-    if (!name || !description || !images || !quantity || !price || !category) {
-      return response.status(400).json({ error: "All fields are required." });
-    }
+    console.log(request.body);
 
     let product = new Product({
       name,
@@ -57,4 +54,14 @@ adminRouter.post(
   }
 );
 
+adminRouter.get("/get-orders", adminMiddleware, async (request, response) => {
+  try {
+    const orders = await Order.find({});
+    response.json(orders);
+  } catch (error) {
+    response.json({
+      error: error.message || error,
+    });
+  }
+});
 export default adminRouter;

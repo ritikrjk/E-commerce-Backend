@@ -65,7 +65,7 @@ authRouter.post("/sign-in", async (request, response) => {
 
     if (!verifyPassword) {
       return response.status(400).json({
-        msg: "Wrong Password",
+        msg: "Incorrect Password",
       });
     }
 
@@ -76,14 +76,7 @@ authRouter.post("/sign-in", async (request, response) => {
 
     return response.status(200).json({
       msg: "Login successful!",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        token: token,
-        role: user.type,
-        cart: user.cart,
-      },
+      user: user
     });
   } catch (error) {
     return response.status(500).json({ error: error.message || error });
@@ -128,14 +121,7 @@ authRouter.post("/", verifySession, (request, response) => {
   }
 
   return response.json({
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token: user.token,
-      role: user.type,
-      cart: user.cart,
-    },
+   user
   });
 });
 

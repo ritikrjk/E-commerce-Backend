@@ -91,7 +91,7 @@ userRouter.post("/api/save-user-address", verifySession, async (req, res) => {
 //order a product
 userRouter.post("/api/order", verifySession, async (req, res) => {
   try {
-    const { cart, address } = req.body;
+    const { cart, address, totalPrice } = req.body;
     let products = [];
 
     for (let i = 0; i < cart.length; i++) {
@@ -133,7 +133,10 @@ userRouter.get("/api/orders/me", verifySession, async (req, res) => {
     const orders = await Order.find({ userId: req.user });
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ error: error.message || error });
+    res.status(500).json({
+      error: error.message || error,
+    });
   }
 });
+
 export default userRouter;

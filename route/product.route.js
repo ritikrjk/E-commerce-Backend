@@ -17,6 +17,7 @@ productRouter.get("/api/products", verifySession, async (request, response) => {
   }
 });
 
+//search a product 
 productRouter.get(
   "/api/products/search/:name",
   verifySession,
@@ -35,7 +36,7 @@ productRouter.get(
   }
 );
 
-// create a post request route to rate the product.
+// rate a product
 productRouter.post("/api/rate-product", verifySession, async (req, res) => {
   try {
     const { id, rating } = req.body;
@@ -62,6 +63,7 @@ productRouter.post("/api/rate-product", verifySession, async (req, res) => {
   }
 });
 
+//deal of day
 productRouter.get("/api/deal-of-day", verifySession, async (req, res) => {
   try {
     let products = await Product.find({});
